@@ -64,15 +64,15 @@ def leer_csv(fuente: Fuente, sep: str | None = None) -> pd.DataFrame:
 
 
 def _fila_encabezado(crudo: pd.DataFrame, max_filas: int = 30) -> int:
-    """Primera fila con al menos la mitad de celdas llenas y mayoría de texto.
+    """Primera fila con al menos la mitad de las celdas llenas.
 
-    Los anexos del DANE ponen logo, título y notas arriba de la tabla real.
+    Los anexos del DANE ponen logo, título y notas (una sola celda llena por fila)
+    arriba de la tabla real. No se exige que el encabezado sea texto: en el anexo
+    del IPC los encabezados son años (2003, 2004, ...).
     """
     ancho = crudo.shape[1]
     for i in range(min(max_filas, len(crudo))):
-        fila = crudo.iloc[i]
-        llenas = fila.dropna()
-        if len(llenas) >= max(2, ancho / 2) and sum(isinstance(v, str) for v in llenas) >= len(llenas) / 2:
+        if crudo.iloc[i].notna().sum() >= max(2, ancho / 2):
             return i
     return 0
 

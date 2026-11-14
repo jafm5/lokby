@@ -1,6 +1,7 @@
 import plotly.express as px
 import streamlit as st
 
+from lokbi.consultas import consultar_sql
 from lokbi.estadistica import descriptivos, perfil_columnas
 
 st.set_page_config(page_title="Explorar · lokbi", page_icon="🔎", layout="wide")
@@ -35,3 +36,20 @@ else:
     st.subheader("Distribución")
     col = st.selectbox("Columna", list(desc.index))
     st.plotly_chart(px.histogram(df, x=col, nbins=40), width="stretch")
+
+st.subheader("Consulta SQL")
+st.caption("Escribe SQL sobre la tabla `datos` (motor DuckDB). Ej.: agrupar, filtrar, sumar.")
+columnas = ", ".join(f'"{c}"' for c in df.columns[:3])
+sql = st.text_area("SQL", f"SELECT {columnas}\nFROM datos\nLIMIT 20", height=120)
+if st.button("Ejecutar"):
+    try:
+        resultado = consultar_sql(df, sql)
+        st.dataframe(resultado, width="stretch")
+        st.download_button(
+            "Descargar resultado (CSV)",
+            resultado.to_csv(index=False).encode("utf-8-sig"),
+            "resultado.csv",
+            "text/csv",
+        )
+    except Exception as e:
+        st.error(f"Error en la consulta: {e}")

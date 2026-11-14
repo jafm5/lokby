@@ -25,3 +25,5 @@ include = ["lokbi*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-m 'not red'"
+markers = ["red: pruebas contra APIs reales (requieren internet); ejecutar con pytest -m red"]

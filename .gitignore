@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 datos/crudos/*
 datos/procesados/*
+datos/cache/
 !datos/**/.gitkeep
 .streamlit/secrets.toml
 *.egg-info/

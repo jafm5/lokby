@@ -1,0 +1,32 @@
+"""Pruebas contra las APIs reales. Requieren internet.
+
+Se ejecutan a mano:  pytest -m red
+Sirven para detectar cuando una fuente oficial cambia de formato o de URL.
+"""
+
+from datetime import timedelta
+
+import pytest
+
+from lokbi.ingesta import banrep, dane, socrata
+
+pytestmark = pytest.mark.red
+SIN_CACHE = timedelta(0)
+
+
+def test_trm_datos_gov_co():
+    df, _ = socrata.consultar("32sa-8pi3", order="vigenciadesde DESC", limite=5, max_edad=SIN_CACHE)
+    assert len(df) == 5 and {"valor", "vigenciadesde"} <= set(df.columns)
+
+
+def test_trm_banrep():
+    df, _ = banrep.serie("TRM diaria", inicio="2024-01-01", fin="2024-12-31", max_edad=SIN_CACHE)
+    assert 200 < len(df) <= 366
+    assert 3500 < df["valor"].mean() < 4500  # TRM promedio 2024 ≈ 4.070
+
+
+def test_ipc_dane_coincide_con_cifras_oficiales():
+    df, _ = dane.ipc(max_edad=SIN_CACHE)
+    s = df.set_index("fecha")["var_anual_pct"]
+    assert s["2023-12-01"] == pytest.approx(9.28, abs=0.01)
+    assert s["2024-12-01"] == pytest.approx(5.20, abs=0.01)

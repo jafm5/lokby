@@ -8,27 +8,36 @@ Análisis **verificable** de datos públicos de Colombia (datos.gov.co, DANE, Ba
 - Cada análisis declara sus limitaciones.
 - Los montos de distintos años se comparan en pesos reales (deflactados por IPC).
 
-## Instalación (Windows)
+## Inicio rápido (Windows)
 ```bash
 python -m venv .venv
-.venv\Scripts\activate          # en Git Bash: source .venv/Scripts/activate
+source .venv/Scripts/activate     # PowerShell/cmd: .venv\Scripts\activate
 pip install -e ".[dev]"
+pytest                            # pruebas
+streamlit run app/Inicio.py       # abre http://localhost:8501
 ```
 
-## Uso
-```bash
-pytest                          # pruebas
-streamlit run app/Inicio.py     # abre http://localhost:8501
-```
+## Qué hace hoy
+- **Cargar datos** desde:
+  - archivos propios: CSV, Excel, JSON, Parquet;
+  - **datos.gov.co**: búsqueda en el catálogo y consultas con filtros (SECOP, TRM, …);
+  - **Banco de la República**: TRM, tasa de política monetaria, IBR, DTF, UVR, COLCAP, TES;
+  - **DANE**: IPC mensual desde 2003 con inflación mensual, anual y año corrido.
+- **Explorar**: tipos y nulos por columna, estadística descriptiva, histogramas y consultas SQL (DuckDB).
+- Caché local con registro de procedencia de cada descarga.
 
-## Estructura
-- `lokbi/`: lógica (ingesta, limpieza, estadística), sin dependencia de la interfaz.
-- `app/`: interfaz web en Streamlit.
-- `analisis/`: investigaciones reproducibles.
-- `datos/`: crudos y procesados (no se suben a Git).
+## Documentación
+| Documento | Contenido |
+|---|---|
+| [docs/arquitectura.md](docs/arquitectura.md) | Módulos, flujo de datos, caché |
+| [docs/fuentes.md](docs/fuentes.md) | Cada fuente: URLs, formato, peculiaridades, verificación |
+| [docs/metodologia.md](docs/metodologia.md) | Reglas de verificabilidad y fórmulas |
+| [docs/guia-desarrollo.md](docs/guia-desarrollo.md) | Entorno, comandos, uso desde Python, cómo agregar conectores |
+| [docs/bitacora.md](docs/bitacora.md) | Decisiones y avances por fase |
 
 ## Hoja de ruta
-1. ✅ Carga multiformato (CSV, Excel, JSON, Parquet) y exploración.
-2. Conectores: datos.gov.co (Socrata), Banco de la República, DANE.
-3. Gráficas, mapas por departamento/municipio, deflactar por IPC.
-4. Primera historia publicada en Streamlit Community Cloud.
+1. ✅ Carga multiformato y exploración.
+2. ✅ Conectores: datos.gov.co, Banco de la República, DANE (IPC).
+3. ⬜ Gráficas, mapas por departamento/municipio, pesos constantes (deflactar por IPC).
+4. ⬜ Primera historia publicada en Streamlit Community Cloud.
+5. ⬜ Opcional: exportar para Power BI/Looker Studio, actualización automática.
