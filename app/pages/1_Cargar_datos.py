@@ -31,7 +31,7 @@ if archivo is not None:
     st.session_state["df_fuente"] = fuente
 
     st.success(f"**{archivo.name}**: {len(df):,} filas × {df.shape[1]} columnas")
-    st.dataframe(df.head(100), use_container_width=True)
+    st.dataframe(df.head(100), width="stretch")
     st.page_link("pages/2_Explorar.py", label="Explorar estos datos →", icon="🔎")
 elif "df" in st.session_state:
     st.caption(f"Datos cargados actualmente: {st.session_state['df_nombre']}")

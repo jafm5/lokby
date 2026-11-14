@@ -6,3 +6,4 @@ datos/crudos/*
 datos/procesados/*
 !datos/**/.gitkeep
 .streamlit/secrets.toml
+*.egg-info/

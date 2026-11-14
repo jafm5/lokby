@@ -23,15 +23,15 @@ c2.metric("Columnas", df.shape[1])
 c3.metric("Celdas vacías", f"{int(df.isna().sum().sum()):,}")
 
 st.subheader("Columnas")
-st.dataframe(perfil_columnas(df), use_container_width=True, hide_index=True)
+st.dataframe(perfil_columnas(df), width="stretch", hide_index=True)
 
 st.subheader("Estadística descriptiva (columnas numéricas)")
 desc = descriptivos(df)
 if desc.empty:
     st.info("No hay columnas numéricas. Si hay montos guardados como texto, habrá que limpiarlos.")
 else:
-    st.dataframe(desc.style.format("{:,.2f}"), use_container_width=True)
+    st.dataframe(desc.style.format("{:,.2f}"), width="stretch")
 
     st.subheader("Distribución")
     col = st.selectbox("Columna", list(desc.index))
-    st.plotly_chart(px.histogram(df, x=col, nbins=40), use_container_width=True)
+    st.plotly_chart(px.histogram(df, x=col, nbins=40), width="stretch")
