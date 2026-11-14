@@ -1,0 +1,27 @@
+[project]
+name = "lokbi"
+version = "0.1.0"
+description = "Análisis verificable de datos públicos de Colombia"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.1",
+    "openpyxl>=3.1",
+    "streamlit>=1.35",
+    "plotly>=5.20",
+    "duckdb>=1.0",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["lokbi*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

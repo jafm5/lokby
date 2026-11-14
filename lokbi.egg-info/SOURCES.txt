@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+lokbi/__init__.py
+lokbi/estadistica.py
+lokbi.egg-info/PKG-INFO
+lokbi.egg-info/SOURCES.txt
+lokbi.egg-info/dependency_links.txt
+lokbi.egg-info/requires.txt
+lokbi.egg-info/top_level.txt
+lokbi/ingesta/__init__.py
+lokbi/ingesta/archivos.py
+tests/test_archivos.py
+tests/test_estadistica.py

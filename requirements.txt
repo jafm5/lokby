@@ -1,0 +1,2 @@
+# Usado por Streamlit Community Cloud al desplegar
+-e .
