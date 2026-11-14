@@ -8,7 +8,11 @@ Análisis **verificable** de datos públicos de Colombia (datos.gov.co, DANE, Ba
 - Cada análisis declara sus limitaciones.
 - Los montos de distintos años se comparan en pesos reales (deflactados por IPC).
 
-## Inicio rápido (Windows)
+## Abrir la app (lo más fácil)
+Doble clic en **`abrir_app.bat`** (en la carpeta del proyecto). Se abre el navegador en http://localhost:8501.
+Para cerrarla, cierra la ventana negra.
+
+## Inicio rápido (Windows, terminal)
 ```bash
 python -m venv .venv
 source .venv/Scripts/activate     # PowerShell/cmd: .venv\Scripts\activate
