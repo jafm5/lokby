@@ -5,6 +5,10 @@ st.set_page_config(page_title="lokbi · Datos de Colombia", page_icon="📊", la
 st.title("📊 lokbi")
 st.subheader("Datos públicos de Colombia, analizados de forma verificable")
 
+st.markdown("### 📰 Análisis publicados")
+st.page_link("pages/5_Historias.py", label="Seguridad en Colombia: ¿qué pasó en los últimos dos años?", icon="🛡️")
+st.divider()
+
 st.markdown(
     """
 Este sitio analiza datos **oficiales** (datos.gov.co, DANE, Banco de la República)
@@ -20,7 +24,7 @@ Si una cifra no se puede verificar, no se publica.
 
 st.markdown(
     """
-**Cómo usarlo** (menú lateral):
+**Haz tu propio análisis** (menú lateral):
 1. **Cargar datos**: archivo propio, datos.gov.co, Banco de la República o DANE.
 2. **Explorar**: tipos, vacíos, estadística y consultas SQL.
 3. **Transformar**: limpiar, filtrar, agrupar, pesos constantes, tasas por habitante.

@@ -1,0 +1,20 @@
+{
+  "generado": "2026-11-14T02:30:13",
+  "ultimo_mes_publicado": "2026-09",
+  "corte": "2026-08",
+  "periodos": {
+    "P0": "sep-2023 a ago-2024",
+    "P1": "sep-2024 a ago-2025",
+    "P2": "sep-2025 a ago-2026"
+  },
+  "anio_poblacion": 2026,
+  "poblacion_total": 53399171.0,
+  "fuentes": {
+    "Homicidio": "https://www.datos.gov.co/d/m8fd-ahd9",
+    "Hurto a personas": "https://www.datos.gov.co/d/4rxi-8m8d",
+    "Extorsión": "https://www.datos.gov.co/d/q2ib-t9am",
+    "Secuestro": "https://www.datos.gov.co/d/d7zw-hpf4",
+    "Población": "https://www.dane.gov.co/files/censo2018/proyecciones-de-poblacion/Departamental/PPED-AreaDep-2018-2050_VP.xlsx",
+    "Medicina Legal": "https://www.datos.gov.co/d/vtub-3de2"
+  }
+}

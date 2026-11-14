@@ -124,3 +124,35 @@ queda sin código **a propósito**: no se le asigna un departamento inventado.
       group="departamento, anio", limite=None)
   ```
 - Con `$group` no existe la columna interna `:id`; el conector ordena por las columnas agrupadas.
+
+---
+
+## Estadística delictiva — Ministerio de Defensa / Policía Nacional
+
+| | |
+|---|---|
+| Conector | `lokbi/ingesta/mindefensa.py` |
+| Cobertura | 2003 hasta el último mes (actualización mensual; verificado hasta sep-2026, publicado 2026-10-21) |
+| Estructura | Una fila por registro: `fecha_hecho`, `cod_depto`, `departamento`, `cod_muni`, `municipio`, `cantidad` (+ columnas propias de cada delito) |
+| Agregación | En el servidor con `$group` (`date_trunc_ym(fecha_hecho)`, `cod_depto`) |
+
+| Delito | Id | Columnas extra |
+|---|---|---|
+| Homicidio | `m8fd-ahd9` | `zona`, `sexo`, `arma_medio`, `_modalidad_presunta`, `spoa_caracterizacion` (intencional / feminicidio) |
+| Hurto a personas | `4rxi-8m8d` | — |
+| Extorsión | `q2ib-t9am` | — |
+| Secuestro | `d7zw-hpf4` | `tipo_delito` (simple / extorsivo) |
+| Hurto a residencias / comercio / vehículos | `7mn7-vzqp` / `7i2x-h5vp` / `csb4-y6v2` | `tipo_delito`, `zona` (vehículos) |
+| Violencia intrafamiliar | `gepp-dxcs` | `zona` |
+| Delitos sexuales | `bz43-8ahq` | `zona`, `sexo` |
+
+**Peculiaridades verificadas (nov-2026)**
+1. **El último mes publicado está incompleto**: sep-2026 trae 966 homicidios (promedio ≈ 1.190) y 630 extorsiones (≈ 1.190). Se excluye siempre.
+2. **Cambio en el registro de secuestro**: hasta 2024 `cantidad` = 1 en todos los registros; desde 2025 hay registros con varias víctimas (hasta 28). Para comparar en el tiempo se usan **registros** (`count(*)`), no la suma de `cantidad`.
+3. **Hurto a personas viene agregado**: ~7 personas por registro, estable 2019-2026, así que es comparable usando `sum(cantidad)`.
+4. **Homicidio y extorsión**: `cantidad` ≈ 1 por registro en todos los años.
+5. **Posible reclasificación en homicidio (ene-2026)**: "ATACADOS POR GAO O GAO-R" salta de ~66 a ~203 al mes y "SICARIATO" baja de ~780 a ~581; la suma no sube. Ver la historia de seguridad.
+
+## Medicina Legal — presuntos homicidios (`vtub-3de2`)
+- Cifras **definitivas** 2015-2024, una fila por víctima (`a_o_del_hecho`, municipio, edad, sexo, mecanismo…).
+- Fuente independiente de la Policía para contrastar homicidios. Diferencia con la Policía: entre 3 % y 6 % según el año; hasta 2021 la Policía registraba más, desde 2022 registra menos.

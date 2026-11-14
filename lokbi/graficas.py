@@ -88,8 +88,9 @@ def grafica(
     fuente: str | None = None,
     pasos: list[str] | None = None,
     horizontal: bool = False,
+    agrupadas: bool = False,
 ) -> go.Figure:
-    """tipo: 'barras', 'lineas' o 'dispersion'."""
+    """tipo: 'barras', 'lineas' o 'dispersion'. `agrupadas`: barras lado a lado en vez de apiladas."""
     datos = df
     colores = None
     if color:
@@ -105,6 +106,8 @@ def grafica(
         else:
             fig = px.bar(datos, x=x, y=y, **comunes)
         fig.update_traces(marker_line_width=0)
+        if agrupadas:
+            fig.update_layout(barmode="group", bargroupgap=0.08)
     elif tipo == "lineas":
         fig = px.line(datos.sort_values(x), x=x, y=y, markers=len(datos) <= 40, **comunes)
         fig.update_traces(line_width=2, marker_size=8)

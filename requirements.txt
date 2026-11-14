@@ -1,2 +1,2 @@
-# Usado por Streamlit Community Cloud al desplegar
--e .
+# Dependencias para Streamlit Community Cloud (instala el paquete lokbi y sus dependencias de pyproject.toml)
+.

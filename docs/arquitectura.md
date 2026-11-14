@@ -32,6 +32,10 @@ DIVIPOLA, GeoJSON, población ─▶ geo.py / dane.py ────────�
 | `lokbi/limpieza.py` | Texto→número (formato colombiano), texto→fecha, códigos DIVIPOLA con cero inicial, normalizar nombres |
 | `lokbi/geo.py` | DIVIPOLA departamentos/municipios, GeoJSON, nombre de departamento → código (con alias) |
 | `lokbi/graficas.py` | Barras, líneas, dispersión, mapa por departamento (coroplético), mapa por municipio (puntos). Paleta fija y fuente en la imagen |
+| `lokbi/ingesta/mindefensa.py` | Delitos de la Policía Nacional agregados en el servidor; homicidios de Medicina Legal |
+| `lokbi/analisis/seguridad.py` | Cálculos de la historia de seguridad: periodos, totales, tasas, contraste de fuentes |
+| `analisis/*.py` | Scripts que generan los datos de cada historia en `datos/historias/<tema>/` (versionados en Git) |
+| `app/pages/5_Historias.py` | Historia publicada: lee solo los CSV de `datos/historias/` (y el mapa), sin consultar las fuentes |
 | `app/estado.py` | Tabla activa, fuente, historial de pasos (deshacer), avisos que sobreviven a `st.rerun()` |
 
 ## Contrato de los conectores

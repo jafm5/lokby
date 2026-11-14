@@ -4,6 +4,34 @@ Registro de decisiones y avances, del más reciente al más antiguo.
 
 ---
 
+## 2026-11-14 — Fase 4: primera historia (seguridad)
+
+**Hecho**
+- Código publicado en GitHub: https://github.com/jafm5/lokby (commits con el correo privado de GitHub).
+- Conector `mindefensa.py` (9 delitos de la Policía Nacional + homicidios de Medicina Legal).
+- Cálculos en `lokbi/analisis/seguridad.py` (con pruebas) y script `analisis/seguridad_2026.py`,
+  que genera las tablas en `datos/historias/seguridad/`.
+- Página **5_Historias**: "Seguridad en Colombia: ¿qué pasó en los últimos dos años?".
+- Tema claro fijo (`.streamlit/config.toml`) y `requirements.txt` para Streamlit Community Cloud.
+
+**Hallazgos (sep-2025 a ago-2026 frente a sep-2024 a ago-2025)**
+- Homicidio +1,8 % (14.248; 26,7 por 100.000 hab.); +6,3 % frente a dos años antes.
+- Hurto a personas −5,7 %; extorsión +4,7 %; secuestro (hechos registrados) 297 → 481 → 493.
+- Posible reclasificación de homicidios de "sicariato" a "atacados por GAO" desde enero de 2026.
+
+**Decisiones**
+- *Excluir el último mes publicado*: estaba incompleto en todos los delitos y habría mostrado una caída falsa.
+- *Comparar secuestros por registros*: desde 2025 un registro puede tener varias víctimas.
+- *No atribuir causas*: la historia dice explícitamente lo que los datos no permiten concluir.
+- *Corregidas dos frases que exageraban* antes de publicar: la suma GAO + sicariato sí baja un poco, y
+  Policía y Medicina Legal no siempre se mueven igual año a año.
+
+**Pendiente**
+- Desplegar en Streamlit Community Cloud (requiere que el usuario inicie sesión con GitHub).
+- Contrastar el hurto con la Encuesta de Convivencia y Seguridad Ciudadana (DANE), que mide delitos no denunciados.
+
+---
+
 ## 2026-11-13 — Fase 3: transformación, gráficas y mapas
 
 **Hecho**

@@ -59,3 +59,18 @@ Basadas en buenas prácticas de visualización accesible:
 | En mapas de conteos, sugerir tasa por habitante | Un mapa de conteos es casi siempre un mapa de población |
 | Aviso en dispersión: correlación ≠ causalidad | Evitar conclusiones que los datos no sostienen |
 | Avisar siempre cuántas filas quedan excluidas | Nada desaparece en silencio |
+
+## Historias publicadas
+
+### Seguridad en Colombia (`analisis/seguridad_2026.py` → `app/pages/5_Historias.py`)
+- **Ventanas**: tres periodos de 12 meses consecutivos que terminan en el último mes completo
+  (`lokbi/analisis/seguridad.py::periodos`). Evita la estacionalidad y usa todos los meses disponibles.
+- **Último mes**: se descarta siempre por incompleto (`ultimo_mes_completo`).
+- **Tendencia**: suma móvil de 12 meses, eje desde cero.
+- **Territorio**: tasa por 100.000 habitantes con la población del año en que termina el último periodo.
+  La variación por departamento solo se publica con al menos 20 casos en el periodo anterior.
+- **Secuestro**: se comparan registros (hechos), no víctimas, por el cambio de registro de 2025.
+- **Texto**: todas las cifras del texto se calculan desde los CSV; no hay números escritos a mano.
+  Las variaciones menores al 2 % se describen como "prácticamente igual".
+- **Datos congelados**: las tablas exactas de la versión publicada están en `datos/historias/seguridad/`
+  (en Git). Para actualizar: ejecutar el script y volver a publicar.

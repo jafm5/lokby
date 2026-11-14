@@ -21,6 +21,11 @@ pytest                            # pruebas
 streamlit run app/Inicio.py       # abre http://localhost:8501
 ```
 
+## Análisis publicados
+- **Seguridad en Colombia: ¿qué pasó en los últimos dos años?**: homicidio, hurto, extorsión y secuestro con datos
+  de la Policía Nacional, contrastados con Medicina Legal. Página *Historias* de la app; datos en
+  `datos/historias/seguridad/`; código en `analisis/seguridad_2026.py`.
+
 ## Qué hace hoy
 - **Cargar datos** desde:
   - archivos propios: CSV, Excel, JSON, Parquet;
@@ -47,5 +52,18 @@ streamlit run app/Inicio.py       # abre http://localhost:8501
 1. ✅ Carga multiformato y exploración.
 2. ✅ Conectores: datos.gov.co, Banco de la República, DANE (IPC).
 3. ✅ Transformación, gráficas, mapas por departamento/municipio, pesos constantes, tasas por habitante.
-4. ⬜ Primera historia publicada en Streamlit Community Cloud.
+4. ✅ Primera historia: seguridad (falta el despliegue en Streamlit Community Cloud).
 5. ⬜ Opcional: exportar para Power BI/Looker Studio, actualización automática.
+
+## Publicar en internet (Streamlit Community Cloud, gratis)
+1. Entrar a https://share.streamlit.io e iniciar sesión con GitHub.
+2. **Create app** → **Deploy a public app from GitHub**.
+3. Repositorio `jafm5/lokby`, rama `main`, archivo principal `app/Inicio.py`.
+4. En *Advanced settings* elegir Python 3.12. **Deploy**.
+5. Cada `git push` a `main` actualiza la app publicada.
+
+## Actualizar la historia de seguridad
+```bash
+python analisis/seguridad_2026.py    # descarga datos nuevos y regenera datos/historias/seguridad/
+git add datos/historias && git commit -m "Actualizar datos de seguridad" && git push
+```

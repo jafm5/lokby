@@ -47,3 +47,13 @@ def test_divipola_coincide_con_geojson():
     divi, _ = geo.departamentos()
     gj, _ = geo.geojson_departamentos()
     assert set(divi["codigo_departamento"]) == {f["properties"]["DPTO"] for f in gj["features"]}
+
+
+def test_paginas_de_la_app_sin_errores():
+    """Recorre las páginas como un usuario (la historia descarga el mapa)."""
+    from streamlit.testing.v1 import AppTest
+
+    at = AppTest.from_file("../app/Inicio.py", default_timeout=300).run()
+    for pagina in ["pages/2_Explorar.py", "pages/5_Historias.py"]:
+        at.switch_page(pagina).run()
+        assert not at.exception, (pagina, at.exception)
