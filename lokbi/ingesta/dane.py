@@ -87,6 +87,57 @@ def ipc(max_edad: timedelta = timedelta(days=7), hoy: date | None = None) -> tup
     return cache.obtener("dane-ipc-indices", descargar, max_edad)
 
 
+URL_POBLACION = {
+    "departamento": f"{BASE.replace('/operaciones', '')}/censo2018/proyecciones-de-poblacion/Departamental/PPED-AreaDep-2018-2050_VP.xlsx",
+    "municipio": f"{BASE.replace('/operaciones', '')}/censo2018/proyecciones-de-poblacion/Municipal/PPED-AreaMun-2018-2042_VP.xlsx",
+}
+
+
+def parsear_poblacion(contenido: bytes, nivel: str) -> pd.DataFrame:
+    """Proyecciones de población (CNPV 2018) -> codigo, nombre, anio, poblacion (área Total).
+
+    El libro tiene hojas 'Índice', 'PPED' y la de datos (la última); la tabla
+    empieza tras ~7 filas de títulos con columnas DP, DPNOM, [MPIO, DPMP], AÑO,
+    ÁREA GEOGRÁFICA, TOTAL. Cada territorio-año trae filas Cabecera, Centros
+    Poblados y Total.
+    """
+    from lokbi.ingesta.archivos import leer_excel
+    from lokbi.limpieza import codigo_divipola, normalizar_texto
+
+    hojas = pd.ExcelFile(io.BytesIO(contenido)).sheet_names
+    df = leer_excel(contenido, hoja=hojas[-1])
+    df.columns = [normalizar_texto(c) for c in df.columns]
+    area = next(c for c in df.columns if c.startswith("AREA"))
+    df = df[df[area].astype(str).str.strip().str.lower() == "total"]
+    if nivel == "municipio":
+        codigo, nombre, digitos = "MPIO", "DPMP", 5
+    else:
+        codigo, nombre, digitos = "DP", "DPNOM", 2
+    salida = pd.DataFrame(
+        {
+            "codigo": codigo_divipola(df[codigo], digitos),
+            "nombre": df[nombre].astype(str).str.strip(),
+            "anio": pd.to_numeric(df["ANO"], errors="coerce").astype("Int64"),
+            "poblacion": pd.to_numeric(df["TOTAL"], errors="coerce"),
+        }
+    )
+    if nivel == "municipio":
+        salida.insert(1, "codigo_departamento", salida["codigo"].str[:2])
+    return salida.dropna(subset=["codigo", "anio"]).reset_index(drop=True)
+
+
+def poblacion(nivel: str = "departamento", max_edad: timedelta = timedelta(days=90)) -> tuple[pd.DataFrame, cache.Procedencia]:
+    """Proyecciones de población del DANE por departamento (2018-2050) o municipio (2018-2042)."""
+    if nivel not in URL_POBLACION:
+        raise ValueError("nivel debe ser 'departamento' o 'municipio'")
+    url = URL_POBLACION[nivel]
+
+    def descargar():
+        return parsear_poblacion(red.get(url).content, nivel), url, f"Proyecciones de población por {nivel}, CNPV 2018 (DANE)"
+
+    return cache.obtener(f"dane-poblacion-{nivel}", descargar, max_edad)
+
+
 def descargar_excel(url: str, max_edad: timedelta = timedelta(days=7)) -> tuple[pd.DataFrame, cache.Procedencia]:
     """Cualquier anexo Excel del DANE (u otra URL) leído con el detector de encabezados."""
     from lokbi.ingesta.archivos import leer_excel

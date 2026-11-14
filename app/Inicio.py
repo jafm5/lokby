@@ -18,4 +18,12 @@ Si una cifra no se puede verificar, no se publica.
 """
 )
 
-st.info("Empieza en **Cargar datos** (menú lateral) y luego ve a **Explorar**.")
+st.markdown(
+    """
+**Cómo usarlo** (menú lateral):
+1. **Cargar datos**: archivo propio, datos.gov.co, Banco de la República o DANE.
+2. **Explorar**: tipos, vacíos, estadística y consultas SQL.
+3. **Transformar**: limpiar, filtrar, agrupar, pesos constantes, tasas por habitante.
+4. **Graficar**: barras, líneas, dispersión y mapas, con la fuente incluida en la imagen.
+"""
+)

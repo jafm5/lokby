@@ -8,12 +8,12 @@ reproducir cualquier cifra publicada sin abrir la app.
 ```
 Fuentes                 lokbi/ (lógica)                         app/ (Streamlit)
 ───────                 ──────────────                          ────────────────
-datos.gov.co ─┐
-BanRep SDMX ──┼─▶ ingesta/*.py ─▶ cache.py ─▶ DataFrame ─┬─▶ 1_Cargar_datos.py
-DANE Excel ───┤        │          (Parquet +            │      ↓ session_state["df"]
-Archivo local ┘        └ red.py    procedencia JSON)     └─▶ 2_Explorar.py
-                         (HTTP)                               estadistica.py
-                                                              consultas.py (DuckDB)
+datos.gov.co ─┐                                                  estado.py (tabla activa + historial)
+BanRep SDMX ──┼─▶ ingesta/*.py ─▶ cache.py ─▶ DataFrame ──▶ 1_Cargar_datos.py
+DANE Excel ───┤        │          (Parquet +                   ↓
+Archivo local ┘        └ red.py    procedencia JSON)        2_Explorar.py    ← estadistica, consultas
+                                                             3_Transformar.py ← limpieza, estadistica, geo, dane
+DIVIPOLA, GeoJSON, población ─▶ geo.py / dane.py ─────────▶ 4_Graficar.py    ← graficas, geo
 ```
 
 ## Módulos
@@ -26,8 +26,13 @@ Archivo local ┘        └ red.py    procedencia JSON)     └─▶ 2_Explora
 | `lokbi/ingesta/socrata.py` | datos.gov.co: búsqueda en catálogo, metadatos, consultas SoQL paginadas |
 | `lokbi/ingesta/banrep.py` | Banco de la República: parser SDMX-ML, catálogo `SERIES` |
 | `lokbi/ingesta/dane.py` | DANE: localización del último anexo del IPC, conversión ancho → largo |
-| `lokbi/estadistica.py` | Perfil de columnas, descriptivos, variación porcentual |
+| `lokbi/ingesta/dane.py` (población) | Proyecciones de población por departamento y municipio |
+| `lokbi/estadistica.py` | Perfil de columnas, descriptivos, agrupar, **pesos constantes** (`deflactar`), **tasa por habitantes**, variación porcentual |
 | `lokbi/consultas.py` | SQL sobre DataFrames con DuckDB |
+| `lokbi/limpieza.py` | Texto→número (formato colombiano), texto→fecha, códigos DIVIPOLA con cero inicial, normalizar nombres |
+| `lokbi/geo.py` | DIVIPOLA departamentos/municipios, GeoJSON, nombre de departamento → código (con alias) |
+| `lokbi/graficas.py` | Barras, líneas, dispersión, mapa por departamento (coroplético), mapa por municipio (puntos). Paleta fija y fuente en la imagen |
+| `app/estado.py` | Tabla activa, fuente, historial de pasos (deshacer), avisos que sobreviven a `st.rerun()` |
 
 ## Contrato de los conectores
 Toda función que trae datos de una fuente externa devuelve
@@ -41,5 +46,15 @@ interfaz y se muestra junto a los datos. **Ningún dato aparece sin su fuente.**
 - Columnas con tipos mezclados se guardan como texto (limitación de Parquet).
 
 ## Estado de la interfaz
-Las páginas comparten la tabla activa en `st.session_state`:
-`df`, `df_nombre`, `df_fuente`.
+Las páginas comparten la tabla activa en `st.session_state` a través de
+`app/estado.py`: `df`, `df_nombre`, `df_fuente` e `historial`.
+
+Cada transformación llama a `estado.aplicar(df_nuevo, "descripción")`, que
+guarda la tabla anterior (para **deshacer**) y la descripción del paso. Los pasos
+se muestran en todas las páginas y se imprimen al pie de cada gráfica junto con
+la fuente. Cargar una tabla nueva reinicia el historial.
+
+## Gráficas
+- Plotly con `theme=None` en Streamlit: la gráfica siempre tiene fondo claro,
+  igual en pantalla que en la imagen descargada (los colores son de la paleta clara).
+- Descarga de imagen: botón de cámara de Plotly (PNG a escala 2).

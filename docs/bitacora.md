@@ -4,6 +4,40 @@ Registro de decisiones y avances, del más reciente al más antiguo.
 
 ---
 
+## 2026-11-13 — Fase 3: transformación, gráficas y mapas
+
+**Hecho**
+- Página **Transformar**: texto→número (formato colombiano), texto→fecha, filtrar (SQL),
+  agrupar, **pesos constantes** con IPC, código DIVIPOLA desde nombre de departamento,
+  **población y tasa por 100.000 habitantes**. Cada paso queda registrado y se puede deshacer.
+- Página **Graficar**: barras, líneas (agrupando fechas por día/mes/trimestre/año),
+  dispersión, mapa coroplético por departamento y mapa de puntos por municipio.
+  Fuente y pasos impresos dentro de la imagen; datos de la gráfica descargables.
+- Nuevos módulos: `limpieza.py`, `geo.py`, `graficas.py`, `app/estado.py`;
+  `dane.poblacion()`; `$group` en el conector de datos.gov.co.
+- Pruebas: 47 sin internet + 5 contra fuentes reales.
+
+**Decisiones**
+- *Cruce geográfico por código DIVIPOLA, nunca por nombre*: los nombres varían entre
+  fuentes ("Distrito Capital de Bogotá", "BOGOTÁ, D.C.", "SANTAFE DE BOGOTA D.C").
+- *Municipios como puntos y no polígonos*: no hay un GeoJSON municipal oficial liviano;
+  las coordenadas DIVIPOLA son oficiales.
+- *Paleta fija validada para daltonismo* y un solo eje Y (ver `metodologia.md`).
+- *`theme=None` en las gráficas*: misma apariencia en pantalla y en la imagen descargada.
+- *Avisos persistentes* (`estado.aviso`): los mensajes se perdían al recargar la página.
+
+**Problemas encontrados y resueltos**
+- SECOP usa "Distrito Capital de Bogotá" y "San Andrés, Providencia y Santa Catalina",
+  que no coincidían con DIVIPOLA → alias. "No Definido" se deja sin código a propósito.
+- DIVIPOLA publica latitud/longitud con coma decimal → `a_numero(decimal=",")`.
+- El mapa excluía en silencio filas sin departamento → ahora avisa cuántas.
+
+**Pendiente**
+- Revisión visual de las gráficas: se verificó que se generan sin errores, pero no se
+  inspeccionaron como imagen (no se instaló `kaleido` para exportarlas desde las pruebas).
+
+---
+
 ## 2026-11-13 — Fase 2: fuentes oficiales
 
 **Hecho**

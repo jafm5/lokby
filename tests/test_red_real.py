@@ -30,3 +30,20 @@ def test_ipc_dane_coincide_con_cifras_oficiales():
     s = df.set_index("fecha")["var_anual_pct"]
     assert s["2023-12-01"] == pytest.approx(9.28, abs=0.01)
     assert s["2024-12-01"] == pytest.approx(5.20, abs=0.01)
+
+
+def test_poblacion_dane_consistente():
+    from lokbi.ingesta import dane as d
+
+    dep, _ = d.poblacion("departamento", max_edad=SIN_CACHE)
+    assert dep["codigo"].nunique() == 33
+    total_2025 = dep.loc[dep["anio"] == 2025, "poblacion"].sum()
+    assert 50e6 < total_2025 < 56e6  # proyección DANE 2025 ≈ 53,1 millones
+
+
+def test_divipola_coincide_con_geojson():
+    from lokbi import geo
+
+    divi, _ = geo.departamentos()
+    gj, _ = geo.geojson_departamentos()
+    assert set(divi["codigo_departamento"]) == {f["properties"]["DPTO"] for f in gj["features"]}

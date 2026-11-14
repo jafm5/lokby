@@ -77,3 +77,50 @@ Si una fuente cambia, `pytest -m red` debería fallar: actualizar este archivo y
 | 2025 | 152,27 | 5,10 % | pendiente de contrastar con el boletín |
 
 Otros anexos (empleo GEIH, pobreza, PIB) se pueden cargar por URL con `dane.descargar_excel(url)`; cada uno tendrá su propio parser cuando se use en un análisis.
+
+### Proyecciones de población (CNPV 2018)
+
+| | |
+|---|---|
+| Función | `dane.poblacion("departamento" \| "municipio")` |
+| Departamental | `.../files/censo2018/proyecciones-de-poblacion/Departamental/PPED-AreaDep-2018-2050_VP.xlsx` (1 MB, 2018-2050) |
+| Municipal | `.../files/censo2018/proyecciones-de-poblacion/Municipal/PPED-AreaMun-2018-2042_VP.xlsx` (4 MB, 2018-2042, ~25 s en leerse) |
+| Estructura | Hojas `Índice`, `PPED` y la de datos (última). ~7 filas de títulos; columnas `DP, DPNOM, [MPIO, DPMP], AÑO, ÁREA GEOGRÁFICA, TOTAL`. Cada territorio-año tiene 3 filas: Cabecera, Centros Poblados y Rural Disperso, **Total** (se usa solo Total) |
+
+**Verificación**: población 2025 = 53.057.212, idéntica sumando departamentos o municipios.
+Hay 1.123 códigos municipales en población vs 1.122 en DIVIPOLA.
+
+---
+
+## DIVIPOLA y geografía
+
+| Recurso | Fuente | Notas |
+|---|---|---|
+| Departamentos | datos.gov.co `vcjz-niiq` (DANE) | 33 (incluye Bogotá D.C.). Latitud/longitud con **coma decimal** |
+| Municipios | datos.gov.co `gdxc-w37w` (DANE) | 1.122 con latitud/longitud (coma decimal) |
+| Polígonos departamentales | GeoJSON público (gist `john-guerra/Colombia.geo.json`, derivado del MGN del DANE) | Propiedad `DPTO` = código de 2 dígitos. Sus nombres son antiguos ("SANTAFE DE BOGOTA D.C"): por eso **se cruza siempre por código, nunca por nombre** |
+
+**Verificado**: los 33 códigos del GeoJSON coinciden exactamente con DIVIPOLA.
+
+Municipios: no hay polígonos oficiales livianos, se dibujan como **puntos** en su
+coordenada DIVIPOLA (tamaño y color según el valor).
+
+### Nombres de departamento en otras fuentes
+`geo.codigo_departamento()` normaliza (sin tildes, mayúsculas, sin puntuación) y
+usa alias para variantes conocidas. En SECOP II hay 34 valores distintos:
+31 coinciden directo, 2 requieren alias ("Distrito Capital de Bogotá",
+"San Andrés, Providencia y Santa Catalina") y "No Definido" (~108.000 contratos)
+queda sin código **a propósito**: no se le asigna un departamento inventado.
+
+---
+
+## Notas sobre SECOP II (`jbjy-vk9h`)
+- Columnas útiles: `nombre_entidad`, `departamento`, `ciudad`, `modalidad_de_contratacion`,
+  `fecha_de_firma`, `valor_del_contrato`, `codigo_entidad`.
+- Más de 1,8 millones de contratos solo en Bogotá: **agregar en el servidor** con `$group`:
+  ```python
+  socrata.consultar("jbjy-vk9h",
+      select="departamento, date_extract_y(fecha_de_firma) AS anio, sum(valor_del_contrato) AS total, count(*) AS contratos",
+      group="departamento, anio", limite=None)
+  ```
+- Con `$group` no existe la columna interna `:id`; el conector ordena por las columnas agrupadas.

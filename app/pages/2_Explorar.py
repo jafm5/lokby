@@ -1,22 +1,16 @@
 import plotly.express as px
 import streamlit as st
 
+import estado
 from lokbi.consultas import consultar_sql
 from lokbi.estadistica import descriptivos, perfil_columnas
+from lokbi.graficas import PALETA
 
 st.set_page_config(page_title="Explorar · lokbi", page_icon="🔎", layout="wide")
 st.title("🔎 Explorar")
 
-if "df" not in st.session_state:
-    st.warning("Primero carga un archivo.")
-    st.page_link("pages/1_Cargar_datos.py", label="Ir a Cargar datos", icon="📥")
-    st.stop()
-
-df = st.session_state["df"]
-st.caption(
-    f"Archivo: **{st.session_state['df_nombre']}** · "
-    f"Fuente: {st.session_state.get('df_fuente') or '⚠️ sin fuente registrada'}"
-)
+df = estado.exigir_datos()
+estado.encabezado()
 
 c1, c2, c3 = st.columns(3)
 c1.metric("Filas", f"{len(df):,}")
@@ -35,7 +29,8 @@ else:
 
     st.subheader("Distribución")
     col = st.selectbox("Columna", list(desc.index))
-    st.plotly_chart(px.histogram(df, x=col, nbins=40), width="stretch")
+    fig = px.histogram(df, x=col, nbins=40, color_discrete_sequence=PALETA)
+    st.plotly_chart(fig.update_traces(marker_line_width=0), width="stretch", theme=None)
 
 st.subheader("Consulta SQL")
 st.caption("Escribe SQL sobre la tabla `datos` (motor DuckDB). Ej.: agrupar, filtrar, sumar.")

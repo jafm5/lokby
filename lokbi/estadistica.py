@@ -48,6 +48,59 @@ def descriptivos(df: pd.DataFrame) -> pd.DataFrame:
     return resumen.drop(columns="p50")
 
 
+AGREGACIONES = {"Suma": "sum", "Promedio": "mean", "Mediana": "median", "Conteo": "count", "Máximo": "max", "Mínimo": "min"}
+
+
+def agregar(df: pd.DataFrame, por: list[str], valor: str | None, funcion: str = "sum") -> pd.DataFrame:
+    """Agrupa por columnas. Con `funcion='count'` o sin `valor` cuenta filas."""
+    por = [p for p in por if p]
+    if not por:
+        raise ValueError("Indica al menos una columna para agrupar")
+    if valor is None or funcion == "count":
+        return df.groupby(por, dropna=False).size().reset_index(name="conteo")
+    return df.groupby(por, dropna=False)[valor].agg(funcion).reset_index()
+
+
+def deflactar(
+    valores: pd.Series,
+    fechas: pd.Series,
+    ipc: pd.DataFrame,
+    fecha_base: pd.Timestamp | str | None = None,
+) -> pd.Series:
+    """Convierte pesos corrientes a pesos constantes de `fecha_base`.
+
+    valor_real = valor_nominal × IPC(base) / IPC(mes de la fecha)
+
+    `ipc` debe tener columnas `fecha` (primer día del mes) e `indice`
+    (como devuelve `lokbi.ingesta.dane.ipc`). `fecha_base` por defecto es el
+    último mes publicado; si es un año ("2025"), se usa diciembre de ese año
+    o el último mes disponible de ese año. Fechas sin IPC publicado quedan vacías.
+    """
+    indice = ipc.set_index(pd.to_datetime(ipc["fecha"]))["indice"].sort_index()
+    if fecha_base is None:
+        base = indice.iloc[-1]
+    else:
+        fb = pd.Timestamp(str(fecha_base))
+        if len(str(fecha_base)) == 4:  # solo año
+            del_anio = indice[indice.index.year == fb.year]
+            if del_anio.empty:
+                raise ValueError(f"No hay IPC para el año {fecha_base}")
+            base = del_anio.iloc[-1]
+        else:
+            fb = fb.to_period("M").to_timestamp()
+            if fb not in indice.index:
+                raise ValueError(f"No hay IPC para {fb:%Y-%m}")
+            base = indice[fb]
+    meses = pd.to_datetime(fechas).dt.to_period("M").dt.to_timestamp()
+    ipc_fecha = meses.map(indice)
+    return valores.astype(float) * base / ipc_fecha
+
+
+def tasa_por_habitantes(conteo: pd.Series, poblacion: pd.Series, por: int = 100_000) -> pd.Series:
+    """Tasa por cada `por` habitantes (por defecto 100.000)."""
+    return conteo.astype(float) / poblacion.astype(float) * por
+
+
 def variacion_porcentual(actual: float, anterior: float) -> float:
     """Variación % entre dos valores. Lanza ValueError si el anterior es 0."""
     if anterior == 0:

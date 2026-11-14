@@ -2,6 +2,7 @@ from datetime import date
 
 import streamlit as st
 
+import estado
 from lokbi.ingesta import banrep, dane, socrata
 from lokbi.ingesta.archivos import FORMATOS_SOPORTADOS, hojas_excel, leer_archivo
 
@@ -11,13 +12,14 @@ st.title("📥 Cargar datos")
 
 def guardar(df, nombre: str, fuente: str) -> None:
     """Deja la tabla disponible para las demás páginas."""
-    st.session_state["df"] = df
-    st.session_state["df_nombre"] = nombre
-    st.session_state["df_fuente"] = fuente
+    estado.cargar(df, nombre, fuente)
     st.success(f"**{nombre}**: {len(df):,} filas × {df.shape[1]} columnas")
     st.caption(f"Fuente: {fuente}")
     st.dataframe(df.head(100), width="stretch")
-    st.page_link("pages/2_Explorar.py", label="Explorar estos datos →", icon="🔎")
+    c1, c2, c3 = st.columns(3)
+    c1.page_link("pages/2_Explorar.py", label="Explorar →", icon="🔎")
+    c2.page_link("pages/3_Transformar.py", label="Transformar →", icon="🧹")
+    c3.page_link("pages/4_Graficar.py", label="Graficar →", icon="📊")
 
 
 def con_errores(funcion, *args, **kwargs):
@@ -87,6 +89,8 @@ with tab_socrata:
         st.caption("SQL simplificado de Socrata. Ver https://dev.socrata.com/docs/queries/")
         select = st.text_input("$select (columnas)", placeholder="nombre_entidad, valor_del_contrato")
         where = st.text_input("$where (condición)", placeholder="fecha_de_firma >= '2024-01-01'")
+        group = st.text_input("$group (agrupar en el servidor)", placeholder="departamento",
+                              help="Con $select usa funciones como sum(valor_del_contrato) o count(*)")
         order = st.text_input("$order (orden)", placeholder="fecha_de_firma DESC")
     limite = st.number_input("Máximo de filas", 100, 1_000_000, 10_000, step=10_000)
 
@@ -95,7 +99,8 @@ with tab_socrata:
         if meta:
             st.markdown(f"**{meta.nombre}** · {meta.entidad} · actualizado {meta.actualizado}")
             r = con_errores(
-                socrata.consultar, dataset_id, select or None, where or None, order or None, int(limite)
+                socrata.consultar, dataset_id, select or None, where or None, order or None, int(limite),
+                group=group or None,
             )
             if r:
                 df, proc = r

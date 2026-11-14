@@ -24,6 +24,10 @@ streamlit run app/Inicio.py       # abre http://localhost:8501
   - **Banco de la República**: TRM, tasa de política monetaria, IBR, DTF, UVR, COLCAP, TES;
   - **DANE**: IPC mensual desde 2003 con inflación mensual, anual y año corrido.
 - **Explorar**: tipos y nulos por columna, estadística descriptiva, histogramas y consultas SQL (DuckDB).
+- **Transformar**: limpiar montos y fechas, filtrar, agrupar, **pesos constantes** (descontar inflación),
+  código DIVIPOLA, **tasa por 100.000 habitantes** con población DANE. Cada paso queda registrado y se puede deshacer.
+- **Graficar**: barras, líneas, dispersión, mapa por departamento y por municipio. La fuente y los pasos
+  aplicados quedan impresos en la imagen.
 - Caché local con registro de procedencia de cada descarga.
 
 ## Documentación
@@ -38,6 +42,6 @@ streamlit run app/Inicio.py       # abre http://localhost:8501
 ## Hoja de ruta
 1. ✅ Carga multiformato y exploración.
 2. ✅ Conectores: datos.gov.co, Banco de la República, DANE (IPC).
-3. ⬜ Gráficas, mapas por departamento/municipio, pesos constantes (deflactar por IPC).
+3. ✅ Transformación, gráficas, mapas por departamento/municipio, pesos constantes, tasas por habitante.
 4. ⬜ Primera historia publicada en Streamlit Community Cloud.
 5. ⬜ Opcional: exportar para Power BI/Looker Studio, actualización automática.
