@@ -21,6 +21,8 @@ pytest                            # pruebas
 streamlit run app/Inicio.py       # abre http://localhost:8501
 ```
 
+**🌐 App publicada:** https://sobaeuehf6p4rx8tdmrz5r.streamlit.app/
+
 ## Análisis publicados
 - **Seguridad en Colombia: ¿qué pasó en los últimos dos años?**: homicidio, hurto, extorsión y secuestro con datos
   de la Policía Nacional, contrastados con Medicina Legal. Página *Historias* de la app; datos en
@@ -52,7 +54,7 @@ streamlit run app/Inicio.py       # abre http://localhost:8501
 1. ✅ Carga multiformato y exploración.
 2. ✅ Conectores: datos.gov.co, Banco de la República, DANE (IPC).
 3. ✅ Transformación, gráficas, mapas por departamento/municipio, pesos constantes, tasas por habitante.
-4. ✅ Primera historia: seguridad (falta el despliegue en Streamlit Community Cloud).
+4. ✅ Primera historia: seguridad, publicada en Streamlit Community Cloud (2026-11-25).
 5. ⬜ Opcional: exportar para Power BI/Looker Studio, actualización automática.
 
 ## Publicar en internet (Streamlit Community Cloud, gratis)

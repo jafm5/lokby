@@ -4,7 +4,10 @@ Registro de decisiones y avances, del más reciente al más antiguo.
 
 ---
 
-## 2026-11-25 — Actualización de la historia de seguridad (datos hasta oct-2026)
+## 2026-11-25 — Actualización de la historia de seguridad (datos hasta oct-2026) y publicación
+
+**Publicada** en Streamlit Community Cloud: https://sobaeuehf6p4rx8tdmrz5r.streamlit.app/
+(se actualiza sola con cada `git push` a `main`).
 
 **Hecho**
 - La Policía publicó datos hasta octubre de 2026 (actualización del 17-nov). Se regeneró
