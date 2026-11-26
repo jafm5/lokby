@@ -132,7 +132,7 @@ queda sin código **a propósito**: no se le asigna un departamento inventado.
 | | |
 |---|---|
 | Conector | `lokbi/ingesta/mindefensa.py` |
-| Cobertura | 2003 hasta el último mes (actualización mensual; verificado hasta sep-2026, publicado 2026-10-21) |
+| Cobertura | 2003 hasta el último mes. Actualización mensual hacia el día 17-21 del mes siguiente (sep-2026 publicado el 2026-10-21; oct-2026 el 2026-11-17) |
 | Estructura | Una fila por registro: `fecha_hecho`, `cod_depto`, `departamento`, `cod_muni`, `municipio`, `cantidad` (+ columnas propias de cada delito) |
 | Agregación | En el servidor con `$group` (`date_trunc_ym(fecha_hecho)`, `cod_depto`) |
 
@@ -147,7 +147,7 @@ queda sin código **a propósito**: no se le asigna un departamento inventado.
 | Delitos sexuales | `bz43-8ahq` | `zona`, `sexo` |
 
 **Peculiaridades verificadas (nov-2026)**
-1. **El último mes publicado está incompleto**: sep-2026 trae 966 homicidios (promedio ≈ 1.190) y 630 extorsiones (≈ 1.190). Se excluye siempre.
+1. **El último mes publicado está incompleto**: sep-2026 traía 966 homicidios (promedio ≈ 1.190) y 630 extorsiones (≈ 1.190) en la publicación de octubre; oct-2026 trae 1.053 homicidios y 687 extorsiones en la de noviembre. Se excluye siempre.
 2. **Cambio en el registro de secuestro**: hasta 2024 `cantidad` = 1 en todos los registros; desde 2025 hay registros con varias víctimas (hasta 28). Para comparar en el tiempo se usan **registros** (`count(*)`), no la suma de `cantidad`.
 3. **Hurto a personas viene agregado**: ~7 personas por registro, estable 2019-2026, así que es comparable usando `sum(cantidad)`.
 4. **Homicidio y extorsión**: `cantidad` ≈ 1 por registro en todos los años.

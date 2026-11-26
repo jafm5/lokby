@@ -4,6 +4,26 @@ Registro de decisiones y avances, del más reciente al más antiguo.
 
 ---
 
+## 2026-11-25 — Actualización de la historia de seguridad (datos hasta oct-2026)
+
+**Hecho**
+- La Policía publicó datos hasta octubre de 2026 (actualización del 17-nov). Se regeneró
+  `datos/historias/seguridad/` con `analisis/seguridad_2026.py`.
+- Corte: sep-2026 (octubre se excluye por incompleto: 687 extorsiones frente a un promedio de 1.198;
+  1.053 homicidios frente a 1.171). Periodos: oct-2023→sep-2024, oct-2024→sep-2025, oct-2025→sep-2026.
+- La frase "es el cambio más grande de los cuatro delitos" ahora se muestra solo si los datos lo confirman.
+
+**Cifras nuevas (último año vs. año anterior)**
+- Homicidio −0,1 % (14.053; 26,3 por 100.000 hab.); +4,9 % frente a dos años antes.
+- Hurto a personas −8,6 %; extorsión +5,3 %.
+- Secuestro (hechos registrados) 296 → 528 → 475: baja 10 % frente al año anterior, pero sube 60 % en dos años.
+  El año anterior ahora incluye septiembre de 2025, con hechos masivos en Cauca (107 víctimas en 8 registros).
+
+**Revisado**: el salto GAO/sicariato de enero de 2026 se mantiene (la suma no sube); el cruce Policía vs.
+Medicina Legal (2021/2022) se mantiene; el aumento del secuestro en dos años no depende de hechos masivos.
+
+---
+
 ## 2026-11-14 — Fase 4: primera historia (seguridad)
 
 **Hecho**

@@ -1,11 +1,11 @@
 {
-  "generado": "2026-11-14T02:30:13",
-  "ultimo_mes_publicado": "2026-09",
-  "corte": "2026-08",
+  "generado": "2026-11-25T18:58:57",
+  "ultimo_mes_publicado": "2026-10",
+  "corte": "2026-09",
   "periodos": {
-    "P0": "sep-2023 a ago-2024",
-    "P1": "sep-2024 a ago-2025",
-    "P2": "sep-2025 a ago-2026"
+    "P0": "oct-2023 a sep-2024",
+    "P1": "oct-2024 a sep-2025",
+    "P2": "oct-2025 a sep-2026"
   },
   "anio_poblacion": 2026,
   "poblacion_total": 53399171.0,

@@ -89,6 +89,8 @@ st.header("En resumen")
 h, hp, ex = resumen.loc["Homicidio"], resumen.loc["Hurto a personas"], resumen.loc["Extorsión"]
 sec_var = (secuestro.loc["P2", "registros"] / secuestro.loc["P1", "registros"] - 1) * 100
 sec_var_2 = (secuestro.loc["P2", "registros"] / secuestro.loc["P0", "registros"] - 1) * 100
+_otros_2 = [h["var_ultimo_vs_primero_pct"], hp["var_ultimo_vs_primero_pct"], ex["var_ultimo_vs_primero_pct"]]
+nota_secuestro = " Es el cambio más grande de los cuatro delitos." if abs(sec_var_2) > max(map(abs, _otros_2)) else ""
 
 cols = st.columns(4)
 cols[0].metric("Homicidios", num(h["P2"]), pct(h["var_ultimo_vs_anterior_pct"]), delta_color="inverse",
@@ -111,7 +113,7 @@ st.markdown(
   {cambio(ex['var_ultimo_vs_primero_pct'])} frente a hace dos años.
 - **Secuestro**: los hechos registrados pasaron de {num(secuestro.loc['P0', 'registros'])} hace dos años a
   {num(secuestro.loc['P1', 'registros'])} y luego a {num(secuestro.loc['P2', 'registros'])}
-  ({pct(sec_var_2, 0)} en dos años). Es el cambio más grande de los cuatro delitos.
+  ({pct(sec_var_2, 0)} en dos años).{nota_secuestro}
 """
 )
 
