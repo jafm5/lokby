@@ -160,3 +160,19 @@ def test_cache_tolera_columnas_con_tipos_mezclados(tmp_path):
     )
     df2, _ = cache.obtener("mixta", lambda: None, directorio=tmp_path)
     assert df2["x"].tolist()[:2] == ["1", "a"]
+
+
+def test_cache_usa_carpeta_temporal_si_la_preferida_no_se_puede_escribir(tmp_path, monkeypatch):
+    monkeypatch.setattr(cache, "DIRECTORIO", tmp_path / "solo_lectura")
+    monkeypatch.setattr(cache, "_TEMPORAL", tmp_path / "temporal")
+    monkeypatch.setattr(cache, "_escribibles", {tmp_path / "solo_lectura": False})
+    assert cache.directorio_cache() == tmp_path / "temporal"
+
+
+def test_cache_devuelve_datos_aunque_no_pueda_guardar(tmp_path, monkeypatch):
+    def falla(*a, **k):
+        raise PermissionError("solo lectura")
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", falla)
+    df, proc = cache.obtener("x", lambda: (pd.DataFrame({"a": [1]}), "f", "d"), directorio=tmp_path)
+    assert df["a"].tolist() == [1] and proc.fuente == "f"

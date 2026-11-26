@@ -44,7 +44,9 @@ Toda función que trae datos de una fuente externa devuelve
 interfaz y se muestra junto a los datos. **Ningún dato aparece sin su fuente.**
 
 ## Caché
-- Ubicación: `datos/cache/` (fuera de Git).
+- Ubicación: `datos/cache/` (fuera de Git), o la variable de entorno `LOKBI_CACHE_DIR`.
+  Si no se puede escribir ahí, se usa `<temporal del sistema>/lokbi-cache` (`cache.directorio_cache`).
+- La caché nunca tumba la app: si no se puede leer o guardar, los datos se descargan y se devuelven igual.
 - Vigencia por defecto: Socrata 1 día, BanRep 12 h, DANE 7 días.
 - La clave incluye todos los parámetros de la consulta (`cache.clave_segura`).
 - Columnas con tipos mezclados se guardan como texto (limitación de Parquet).

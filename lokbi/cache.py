@@ -11,7 +11,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
+import os
 import re
+import tempfile
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -19,7 +22,32 @@ from typing import Callable
 
 import pandas as pd
 
-DIRECTORIO = Path(__file__).resolve().parent.parent / "datos" / "cache"
+# Carpeta preferida: datos/cache del proyecto. Se puede cambiar con la variable
+# de entorno LOKBI_CACHE_DIR. Si no se puede escribir (por ejemplo, en un
+# servidor donde el paquete quedó instalado en una carpeta de solo lectura),
+# se usa una carpeta temporal del sistema.
+DIRECTORIO = Path(os.environ.get("LOKBI_CACHE_DIR") or Path(__file__).resolve().parent.parent / "datos" / "cache")
+_TEMPORAL = Path(tempfile.gettempdir()) / "lokbi-cache"
+_escribibles: dict[Path, bool] = {}
+_log = logging.getLogger(__name__)
+
+
+def _se_puede_escribir(carpeta: Path) -> bool:
+    if carpeta not in _escribibles:
+        try:
+            carpeta.mkdir(parents=True, exist_ok=True)
+            prueba = carpeta / ".prueba_escritura"
+            prueba.write_text("ok", encoding="utf-8")
+            prueba.unlink()
+            _escribibles[carpeta] = True
+        except OSError:
+            _escribibles[carpeta] = False
+    return _escribibles[carpeta]
+
+
+def directorio_cache() -> Path:
+    """La carpeta de caché a usar: la preferida si se puede escribir, si no la temporal."""
+    return DIRECTORIO if _se_puede_escribir(DIRECTORIO) else _TEMPORAL
 
 
 @dataclass
@@ -51,22 +79,29 @@ def obtener(
 
     `descargar` devuelve (df, fuente, descripcion).
     """
-    directorio = directorio or DIRECTORIO
+    directorio = directorio or directorio_cache()
     archivo = directorio / f"{clave}.parquet"
     meta = directorio / f"{clave}.json"
 
-    if archivo.exists() and meta.exists():
-        proc = Procedencia(**json.loads(meta.read_text(encoding="utf-8")))
-        if datetime.now() - datetime.fromisoformat(proc.descargado) < max_edad:
-            return pd.read_parquet(archivo), proc
+    try:
+        if archivo.exists() and meta.exists():
+            proc = Procedencia(**json.loads(meta.read_text(encoding="utf-8")))
+            if datetime.now() - datetime.fromisoformat(proc.descargado) < max_edad:
+                return pd.read_parquet(archivo), proc
+    except (OSError, ValueError, TypeError) as e:  # caché dañada o ilegible: se descarga de nuevo
+        _log.warning("No se pudo leer la caché %s: %s", clave, e)
 
     df, fuente, descripcion = descargar()
     proc = Procedencia(fuente=fuente, descripcion=descripcion, descargado=datetime.now().isoformat(timespec="seconds"))
-    directorio.mkdir(parents=True, exist_ok=True)
-    # Parquet no admite columnas con tipos mezclados: se normalizan a texto
-    seguro = df.copy()
-    for col in seguro.columns[seguro.dtypes == object]:
-        seguro[col] = seguro[col].astype("string")
-    seguro.to_parquet(archivo, index=False)
-    meta.write_text(json.dumps(asdict(proc), ensure_ascii=False, indent=2), encoding="utf-8")
+    try:
+        directorio.mkdir(parents=True, exist_ok=True)
+        # Parquet no admite columnas con tipos mezclados: se normalizan a texto
+        seguro = df.copy()
+        for col in seguro.columns[seguro.dtypes == object]:
+            seguro[col] = seguro[col].astype("string")
+        seguro.to_parquet(archivo, index=False)
+        meta.write_text(json.dumps(asdict(proc), ensure_ascii=False, indent=2), encoding="utf-8")
+    except OSError as e:
+        # La caché solo acelera; si no se puede guardar, los datos se devuelven igual
+        _log.warning("No se pudo guardar la caché %s: %s", clave, e)
     return df, proc

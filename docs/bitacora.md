@@ -4,6 +4,23 @@ Registro de decisiones y avances, del más reciente al más antiguo.
 
 ---
 
+## 2026-11-25 — Corrección: error de permisos en la app publicada
+
+**Problema**: en Streamlit Cloud, la historia y las descargas fallaban con
+`PermissionError: ... site-packages/datos`.
+
+**Causa**: `requirements.txt` tenía `.`, que **copia** el paquete `lokbi` a `site-packages` (solo lectura).
+La caché calculaba su carpeta junto al código, así que intentaba escribir en `site-packages/datos/cache`.
+Además, con el paquete copiado, los cambios en `lokbi/` no habrían llegado a la app con cada `git push`.
+
+**Solución**
+- `requirements.txt` → `-e .` (instalación editable: usa el código del repositorio).
+- `cache.directorio_cache()`: si la carpeta preferida no se puede escribir, usa la carpeta temporal del sistema.
+- `cache.obtener()`: errores al leer o guardar la caché ya no detienen la app.
+- 2 pruebas nuevas; simulación local con la carpeta de caché bloqueada: historia y descargas sin errores.
+
+---
+
 ## 2026-11-25 — Actualización de la historia de seguridad (datos hasta oct-2026) y publicación
 
 **Publicada** en Streamlit Community Cloud: https://sobaeuehf6p4rx8tdmrz5r.streamlit.app/

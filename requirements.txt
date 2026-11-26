@@ -1,2 +1,4 @@
-# Dependencias para Streamlit Community Cloud (instala el paquete lokbi y sus dependencias de pyproject.toml)
-.
+# Dependencias para Streamlit Community Cloud.
+# -e (editable): usa el código del repositorio directamente, así cada git push llega a la app
+# y la caché puede escribir en datos/cache. Con '.' el paquete se copiaba a site-packages (solo lectura).
+-e .
